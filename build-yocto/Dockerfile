@@ -18,10 +18,10 @@ RUN curl http://storage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/
 RUN chmod a+x /usr/local/bin/repo
 
 # Create user "jenkins"
-RUN id jenkins 2>/dev/null || useradd --uid 1000 --create-home jenkins
+RUN id jenkins 2>/dev/null || useradd --uid 1000 -s /bin/bash --create-home jenkins 
 
 # Create a non-root user that will perform the actual build
-RUN id build 2>/dev/null || useradd --uid 30000 --create-home build
+RUN id build 2>/dev/null || useradd --uid 30000 -s /bin/bash  --create-home build 
 RUN apt-get install -y sudo
 RUN echo "build ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 
@@ -36,6 +36,9 @@ RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
+
+RUN sudo ln -sf /bin/bash /bin/sh 
+RUN export SHELL=/bin/bash
 
 USER build
 WORKDIR /home/build
